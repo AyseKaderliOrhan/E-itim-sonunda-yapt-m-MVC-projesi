@@ -1,2 +1,2 @@
-# E-itim-sonunda-yapt-m-MVC-projesi
+# Egitim-sonunda-yaptıgım-MVC-projesi
 Eğitim sonunda yaptığım MVC projesi
