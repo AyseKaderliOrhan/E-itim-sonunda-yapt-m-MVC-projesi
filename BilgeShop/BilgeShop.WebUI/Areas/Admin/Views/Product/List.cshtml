@@ -1,0 +1,117 @@
+﻿@model List<ProductViewModel>
+<div>
+
+	<div class="float-start"> <h2>Ürünler</h2> </div>
+	<div class="float-end"> <a asp-area="Admin" asp-controller="Product" asp-action="New" class="btn btn-success">Yeni Ürün</a> </div>
+
+</div>
+
+<div style="padding-top:75px">
+
+	<table id="productTable" class="table table-striped">
+
+
+		<thead>
+			<tr>
+				<th></th>
+				<th>Ürün Adı</th>
+				<th>Birim Fiyatı</th>
+				<th>Stok Miktarı</th>
+				<th>Kategori</th>
+				<th></th>
+
+			</tr>
+		</thead>
+
+		<tbody>
+			@foreach (var p in Model)
+			{
+				<tr>
+					<td>
+						@if (string.IsNullOrWhiteSpace(@p.ImagePath))
+						{
+							<img src="~/Images/no-image.jpg" width="120" height="120"></img>
+						}
+						else
+						{
+
+							<a href="~/Images/Products/@p.ImagePath" data-lightbox="@p.Id" data-title="@p.Name"><img src="~/Images/Products/@p.ImagePath" width="120" height="120"></img></a>
+
+						}
+					</td>
+					<td>@p.Name</td>
+					<td>@p.UnitPrice</td>
+					<td>@p.UnitInStock</td>
+					<td>@p.CategoryName</td>
+					<td>
+						<a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-primary">Düzenle</a>
+						<a href="#" data-id="@p.Id" class="btn btn-sm btn-danger delete">Sil</a>
+					</td>
+
+				</tr>
+			}
+		</tbody>
+
+	</table>
+
+</div>
+
+@section Scripts{
+	<script>
+
+		var table = new DataTable('#productTable', {
+			language: {
+				url: '//cdn.datatables.net/plug-ins/1.13.3/i18n/tr.json',
+			},
+			pageLength: 5
+		});
+		lightbox.option({
+			'resizeDuration': 200,
+			'wrapAround': true,
+			'maxWidth': 300,
+			'maxHeight': 300
+		});
+
+		$('#productTable .delete').click(function(e) {
+
+			e.preventDefault(); // butonun yönlendirme işlemini engeller.
+
+			var productId = $(this).data('id');
+
+			Swal.fire({
+				title: 'Emin misin?',
+				text: "Dikkat! Ürün Silinecektir.",
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Onaylıyorum.',
+				cancelButtonText: 'İptal'
+			}).then((result) => {
+				if (result.isConfirmed) {
+
+                    $.ajax({
+						url : '/admin/product/delete/' + productId,
+						method : 'GET'
+                    }).done(function(){ 
+					Swal.fire(
+						'Silindi!',
+						'Ürün Başarıyla Silindi.',
+						'success'
+					).then(() => { window.location.reload()})
+                    }).fail(function() { 
+					Swal.fire(
+						'Silindi!',
+						'Ürün Silinirken Bir Hata Oluştu, Silme İşlemi Gerçekleşemedi',
+						'error'
+					)
+					})
+
+					
+					
+				}
+			})
+		})
+	</script>
+
+}
